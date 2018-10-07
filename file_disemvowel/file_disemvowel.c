@@ -75,8 +75,8 @@ int copyNonVowels(int num_chars, char* in_buf, char* out_buf) {
  * use fwrite to write that out.         
  */
 void disemvowel(FILE* inputFile, FILE* outputFile) {
-	char in_buf[BUF_SIZE];
-	char out_buf[BUF_SIZE];
+	char *in_buf[BUF_SIZE];	// Create in and out buffers
+	char *out_buf[BUF_SIZE];
 
 	while(fread(in_buf, sizeof(in_buf), BUF_SIZE, inputFile) > 0) {
 		fread(in_buf, sizeof(in_buf), BUF_SIZE, inputFile);
@@ -89,11 +89,8 @@ int main(int argc, char *argv[]) {
     FILE *inputFile; 
     FILE *outputFile;
 
-   inputFile = fopen(argv[1], "r");
-   outputFile = fopen(stdout, "w");
-
-    // Code that processes the command line arguments 
-    // and sets up inputFile and outputFile.
+   inputFile = fopen(argv[1], "r"); // InputFile is the second argument
+   outputFile = fopen(stdout, "w"); // Assumes no output file is given as an argument
 
     disemvowel(inputFile, outputFile);
 
