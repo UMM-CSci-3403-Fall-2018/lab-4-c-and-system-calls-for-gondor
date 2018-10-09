@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <string.h>
 
+#define BUF_SIZE 1024
+
 static int num_dirs, num_regular;
 
 bool is_dir(const char* path) {
@@ -15,7 +17,18 @@ bool is_dir(const char* path) {
    * S_ISDIR to see if the file is a directory. Make sure you check the
    * return value from stat in case there is a problem, e.g., maybe the
    * the file doesn't actually exist.
+   *
+   * Not recursive, just returns boolean
    */
+  struct stat buf = (struct stat *) malloc(sizeof(struct stat));
+  if(stat(path, buf) < 0){
+    printf("Directory or File doesn't exist");
+  }
+  
+  bool dir = S_ISDIR(buf.st_mode);
+  free(buf);
+
+  return dir;
 }
 
 /* 
