@@ -94,8 +94,19 @@ int main(int argc, char *argv[]) {
     FILE *inputFile; 
     FILE *outputFile;
 
-   inputFile = stdin; 		    // InputFile is stdinput
-   outputFile = stdout;		    // Assumes no output file is given as an argument
+    if (argc == 1) {
+    inputFile = stdin; 
+    outputFile = stdout;
+	}
+    else if (argc == 2) {
+    inputFile = fopen(argv[1], "r");
+    outputFile = stdout;
+    }
+    else if (argc == 3) {
+    inputFile = fopen(argv[1], "r");
+    outputFile = fopen(argv[2], "w");
+    }
+    else printf("Too many arguments given");    
 
     disemvowel(inputFile, outputFile);
     
