@@ -51,16 +51,16 @@ for(unsigned int i = 0; i < strlen(str); i++) {
  * that were copied over.
  */
 int copyNonVowels(int num_chars, char* in_buf, char* out_buf) {
-	int streamlen = determineLength(in_buf);
+	//int streamlen = determineLength(in_buf);
 	int j = 0;
 
-	out_buf = (char*)calloc(streamlen, sizeof(char));
+	//out_buf = (char*)calloc(streamlen + 1, sizeof(char));
 
 	for(int i = 0; i < num_chars; i++) {
-	if (!(isVowel(in_buf[i]))) {
+	  if (!(isVowel(in_buf[i]))) {
 		out_buf[j] = in_buf[i];
 		j++;
-		}
+	  }
 	}
 	out_buf[j] = '\0';
 
@@ -75,24 +75,30 @@ int copyNonVowels(int num_chars, char* in_buf, char* out_buf) {
  * use fwrite to write that out.         
  */
 void disemvowel(FILE* inputFile, FILE* outputFile) {
-	char *in_buf[BUF_SIZE];	// Create in and out buffers
-	char *out_buf[BUF_SIZE];
+	char in_buf[BUF_SIZE];
+	char out_buf[BUF_SIZE + 1];
+	//in_buf = (char*)calloc(BUF_SIZE, sizeof(char));
+	int non_vowels = 0;
 
-	while(fread(in_buf, sizeof(in_buf), BUF_SIZE, inputFile) > 0) {
-		fread(in_buf, sizeof(in_buf), BUF_SIZE, inputFile);
-		copyNonVowels(BUF_SIZE, in_buf, out_buf);
-		fwrite(out_buf, sizeof(out_buf), BUF_SIZE, outputFile);
+	int num_read = fread(in_buf, sizeof(char), BUF_SIZE, inputFile);
+	while(num_read > 0) {
+		non_vowels = copyNonVowels(num_read, in_buf, out_buf);
+		fwrite(out_buf, sizeof(char), non_vowels, outputFile);
+		num_read = fread(in_buf, sizeof(char), BUF_SIZE, inputFile);
 	}
+	fclose(inputFile);
+	fclose(outputFile);
 }
 
 int main(int argc, char *argv[]) { 
     FILE *inputFile; 
     FILE *outputFile;
 
-   inputFile = fopen(argv[1], "r"); // InputFile is the second argument
-   outputFile = fopen(stdout, "w"); // Assumes no output file is given as an argument
+   inputFile = stdin; 		    // InputFile is stdinput
+   outputFile = stdout;		    // Assumes no output file is given as an argument
 
     disemvowel(inputFile, outputFile);
+    
 
     return 0; 
 }
