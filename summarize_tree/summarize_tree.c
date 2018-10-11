@@ -6,8 +6,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#define BUF_SIZE 1024
-
 static int num_dirs, num_regular;
 
 bool is_dir(const char* path) {
@@ -20,12 +18,12 @@ bool is_dir(const char* path) {
    *
    * Not recursive, just returns boolean
    */
-  struct stat buf = (struct stat *) malloc(sizeof(struct stat));
+  struct stat *buf = (struct stat*) malloc(sizeof(struct stat));
   if(stat(path, buf) < 0){
     printf("Directory or File doesn't exist");
   }
   
-  bool dir = S_ISDIR(buf.st_mode);
+  bool dir = S_ISDIR((*buf).st_mode);
   free(buf);
 
   return dir;
@@ -49,12 +47,30 @@ void process_directory(const char* path) {
    * with a matching call to chdir() to move back out of it when you're
    * done.
    */
+  num_dirs++;
+
+  chdir(path);
+  DIR *dir;
+  struct dirent *dp = (struct dirent*) malloc(sizeof(struct dirent));
+
+  dir = opendir(".");
+  while((dp = readdir(dir)) != NULL){
+   char* name = (*dp).d_name;
+    if(strcmp(name, ".")!=0 && strcmp(name, "..")!=0){
+      process_path(name);
+    }
+  }
+  closedir(dir);
+
+  chdir("..");
+  free(dp);
 }
 
 void process_file(const char* path) {
   /*
    * Update the number of regular files.
    */
+  num_regular++;
 }
 
 void process_path(const char* path) {
