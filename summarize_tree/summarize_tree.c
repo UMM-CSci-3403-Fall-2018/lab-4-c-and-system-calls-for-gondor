@@ -10,13 +10,10 @@ static int num_dirs, num_regular;
 
 bool is_dir(const char* path) {
   /*
-   * Use the stat() function (try "man 2 stat") to determine if the file
-   * referenced by path is a directory or not.  Call stat, and then use
-   * S_ISDIR to see if the file is a directory. Make sure you check the
-   * return value from stat in case there is a problem, e.g., maybe the
-   * the file doesn't actually exist.
-   *
-   * Not recursive, just returns boolean
+   * Uses the stat() function to determine if the file
+   * referenced by path is a directory or not.
+   * Calls S_ISDIR to see if the file is a directory. Checks the
+   * return value from stat in case there is a problem.
    */
   struct stat *buf = (struct stat*) malloc(sizeof(struct stat));
   if(stat(path, buf) < 0){
@@ -29,23 +26,17 @@ bool is_dir(const char* path) {
   return dir;
 }
 
-/* 
- * I needed this because the multiple recursion means there's no way to
- * order them so that the definitions all precede the cause.
- */
 void process_path(const char*);
 
 void process_directory(const char* path) {
   /*
-   * Update the number of directories seen, use opendir() to open the
-   * directory, and then use readdir() to loop through the entries
-   * and process them. You have to be careful not to process the
-   * "." and ".." directory entries, or you'll end up spinning in
-   * (infinite) loops. Also make sure you closedir() when you're done.
+   * Update the number of directories seen, uses opendir() to open the
+   * directory, and then uses readdir() to loop through the entries
+   * and process them. Checks to avoid processing the
+   * "." and ".." directory entries. closedir() is called when done.
    *
-   * You'll also want to use chdir() to move into this new directory,
-   * with a matching call to chdir() to move back out of it when you're
-   * done.
+   * Uses chdir() to move into a new directory and leaves when
+   * all of the files and subdirectories are processed.
    */
   num_dirs++;
 
@@ -68,11 +59,13 @@ void process_directory(const char* path) {
 
 void process_file(const char* path) {
   /*
-   * Update the number of regular files.
+   * Updates the number of regular files.
    */
   num_regular++;
 }
 
+// Checks if an item is a file or a directory
+// and processes it accordingly.
 void process_path(const char* path) {
   if (is_dir(path)) {
     process_directory(path);
@@ -82,7 +75,8 @@ void process_path(const char* path) {
 }
 
 int main (int argc, char *argv[]) {
-  // Ensure an argument was provided.
+  // Ensures the correct number of
+  // arguments are given.
   if (argc != 2) {
     printf ("Usage: %s <path>\n", argv[0]);
     printf ("       where <path> is the file or root of the tree you want to summarize.\n");
